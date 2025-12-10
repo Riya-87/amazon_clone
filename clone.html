@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Amazon Ember', Arial, sans-serif;
+            background-color: #eaeded;
+            overflow-x: hidden;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(to bottom, #232f3e 0%, #131921 100%);
+            color: white;
+            padding: 12px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff9900 0%, #febd69 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            padding: 5px 10px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .logo:hover {
+            border-color: #ff9900;
+            transform: scale(1.05);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #ff9900;
+            transition: width 0.3s ease;
+        }
+
+        .logo:hover::after {
+            width: 100%;
+        }
+
+        .search-bar {
+            flex: 1;
+            display: flex;
+            min-width: 300px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            box-shadow: inset 0 0 0 2px #ff9900;
+        }
+
+        .search-bar button {
+            background: linear-gradient(to bottom, #febd69 0%, #ff9900 100%);
+            border: none;
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .search-bar button:hover {
+            background: linear-gradient(to bottom, #ff9900 0%, #e88b00 100%);
+            transform: scale(1.05);
+        }
+
+        .search-bar button:active {
+            transform: scale(0.95);
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .account, .cart {
+            cursor: pointer;
+            padding: 10px 14px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        .account:hover, .cart:hover {
+            border-color: white;
+            background-color: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .cart {
+            position: relative;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ff9900 0%, #ff6b00 100%);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid #131921;
+            animation: pulse 0.5s ease;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: linear-gradient(to bottom, #374455 0%, #232f3e 100%);
+            padding: 10px 20px;
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .nav-bar::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .nav-bar::-webkit-scrollbar-track {
+            background: #232f3e;
+        }
+
+        .nav-bar::-webkit-scrollbar-thumb {
+            background: #ff9900;
+            border-radius: 3px;
+        }
+
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 14px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .nav-bar a:hover {
+            background: linear-gradient(135deg, #ff9900 0%, #febd69 100%);
+            color: #131921;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 153, 0, 0.3);
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, #37475a 0%, #232f3e 50%, #1a242f 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.8s ease;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+
+        .hero p {
+            margin-bottom: 30px;
+            font-size: 20px;
+            animation: fadeIn 1s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .hero button {
+            background: linear-gradient(135deg, #ff9900 0%, #febd69 100%);
+            color: #131921;
+            border: none;
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 20px rgba(255, 153, 0, 0.4);
+            animation: fadeIn 1.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .hero button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .hero button:hover {
+            transform: scale(1.08) translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 153, 0, 0.6);
+        }
+
+        .hero button:active {
+            transform: scale(1.02) translateY(-1px);
+        }
+
+        /* Product Grid */
+        .products-section {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .products-section h2 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: #131921;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 153, 0, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .product-card:hover::before {
+            left: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(255, 153, 0, 0.2), 0 0 0 2px #ff9900;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 240px;
+            background: linear-gradient(135deg, #f7f7f7 0%, #e8e8e8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+        }
+
+        .product-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #0066c0;
+            min-height: 40px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .product-card:hover .product-title {
+            color: #ff9900;
+        }
+
+        .product-rating {
+            color: #ff9900;
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .product-rating span {
+            color: #565959;
+            font-size: 13px;
+        }
+
+        .product-price {
+            font-size: 26px;
+            font-weight: bold;
+            color: #b12704;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .product-price .currency {
+            font-size: 18px;
+        }
+
+        .product-price .old-price {
+            font-size: 16px;
+            color: #565959;
+            text-decoration: line-through;
+            font-weight: normal;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            background: linear-gradient(to bottom, #ffd814 0%, #f7ca00 100%);
+            border: 1px solid #fcd200;
+            padding: 12px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-to-cart::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .add-to-cart:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .add-to-cart:hover {
+            background: linear-gradient(to bottom, #f7ca00 0%, #e8b700 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .add-to-cart:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-bar {
+                min-width: 100%;
+            }
+
+            .header-right {
+                justify-content: space-between;
+            }
+
+            .hero h1 {
+                font-size: 24px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+            }
+        }
+
+        /* Feedback message */
+        .feedback {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #232f3e 0%, #131921 100%);
+            color: white;
+            padding: 18px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            display: none;
+            z-index: 1000;
+            border: 2px solid #ff9900;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(500px) scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="logo" onclick="showFeedback('Logo clicked!')">amazon.in</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for products..." id="searchInput">
+                <button onclick="handleSearch()">🔍</button>
+            </div>
+            <div class="header-right">
+                <div class="account" onclick="showFeedback('Account menu clicked!')">
+                    Hello, Sign In<br>
+                    <strong>Account & Lists</strong>
+                </div>
+                <div class="cart" onclick="showFeedback('Cart clicked!')">
+                    🛒 Cart
+                    <span class="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <a href="#" onclick="handleNavClick(event, 'All')">All</a>
+        <a href="#" onclick="handleNavClick(event, 'Electronics')">Electronics</a>
+        <a href="#" onclick="handleNavClick(event, 'Fashion')">Fashion</a>
+        <a href="#" onclick="handleNavClick(event, 'Home & Kitchen')">Home & Kitchen</a>
+        <a href="#" onclick="handleNavClick(event, 'Books')">Books</a>
+        <a href="#" onclick="handleNavClick(event, 'Sports')">Sports</a>
+        <a href="#" onclick="handleNavClick(event, 'Toys')">Toys</a>
+        <a href="#" onclick="handleNavClick(event, 'Beauty')">Beauty</a>
+    </nav>
+
+    <section class="hero">
+        <h1>Welcome to Our Store</h1>
+        <p>Discover amazing deals on thousands of products</p>
+        <button onclick="showFeedback('Shop Now clicked! Scrolling to products...')">Shop Now</button>
+    </section>
+
+    <section class="products-section">
+        <h2>Featured Products</h2>
+        <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <div class="feedback" id="feedback"></div>
+
+    <script>
+        let cartCount = 0;
+
+        // Sample products data with images
+        const products = [
+            { 
+                title: "Premium Wireless Headphones", 
+                price: 5999, 
+                oldPrice: 7999,
+                rating: "★★★★☆", 
+                reviews: "4.5",
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+                badge: "Best Seller"
+            },
+            { 
+                title: "Smart Watch Pro", 
+                price: 14999, 
+                oldPrice: 19999,
+                rating: "★★★★★", 
+                reviews: "4.8",
+                image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
+                badge: "20% OFF"
+            },
+            { 
+                title: "Bluetooth Speaker", 
+                price: 3499, 
+                oldPrice: 4999,
+                rating: "★★★★☆", 
+                reviews: "4.3",
+                image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop",
+                badge: ""
+            },
+            { 
+                title: "USB-C Cable Pack", 
+                price: 899, 
+                oldPrice: 1299,
+                rating: "★★★★☆", 
+                reviews: "4.6",
+                image: "https://images.unsplash.com/photo-1591290619762-2557ea8c8f78?w=400&h=400&fit=crop",
+                badge: ""
+            },
+            { 
+                title: "Laptop Stand Adjustable", 
+                price: 2499, 
+                oldPrice: 3499,
+                rating: "★★★★☆", 
+                reviews: "4.4",
+                image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
+                badge: "New"
+            },
+            { 
+                title: "Wireless Gaming Mouse", 
+                price: 1899, 
+                oldPrice: 2499,
+                rating: "★★★★☆", 
+                reviews: "4.2",
+                image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=400&h=400&fit=crop",
+                badge: ""
+            },
+            { 
+                title: "Desk Organizer Premium", 
+                price: 1299, 
+                oldPrice: 1799,
+                rating: "★★★★☆", 
+                reviews: "4.1",
+                image: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400&h=400&fit=crop",
+                badge: ""
+            },
+            { 
+                title: "LED Desk Lamp RGB", 
+                price: 2999, 
+                oldPrice: 3999,
+                rating: "★★★★★", 
+                reviews: "4.7",
+                image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=400&fit=crop",
+                badge: "Top Rated"
+            },
+            { 
+                title: "Portable Power Bank 20000mAh", 
+                price: 2199, 
+                oldPrice: 2999,
+                rating: "★★★★☆", 
+                reviews: "4.5",
+                image: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400&h=400&fit=crop",
+                badge: ""
+            },
+            { 
+                title: "Phone Stand Aluminum", 
+                price: 899, 
+                oldPrice: 1299,
+                rating: "★★★★☆", 
+                reviews: "4.3",
+                image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=400&fit=crop",
+                badge: ""
+            },
+            { 
+                title: "Laptop Backpack Waterproof", 
+                price: 3199, 
+                oldPrice: 4499,
+                rating: "★★★★☆", 
+                reviews: "4.6",
+                image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+                badge: "Deal"
+            },
+            { 
+                title: "Webcam HD 1080p", 
+                price: 4299, 
+                oldPrice: 5999,
+                rating: "★★★★☆", 
+                reviews: "4.4",
+                image: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400&h=400&fit=crop",
+                badge: ""
+            }
+        ];
+
+        // Render products
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            products.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.innerHTML = `
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.title}" onerror="this.src='https://via.placeholder.com/400x400?text=Product+Image'">
+                        ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+                    </div>
+                    <div class="product-title">${product.title}</div>
+                    <div class="product-rating">
+                        ${product.rating}
+                        <span>(${product.reviews})</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="currency">₹</span>${product.price.toLocaleString('en-IN')}
+                        ${product.oldPrice ? `<span class="old-price">₹${product.oldPrice.toLocaleString('en-IN')}</span>` : ''}
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart(event, '${product.title}', ${product.price})">Add to Cart</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Add to cart function
+        function addToCart(event, productName, price) {
+            event.stopPropagation();
+            cartCount++;
+            document.querySelector('.cart-count').textContent = cartCount;
+            document.querySelector('.cart-count').style.animation = 'none';
+            setTimeout(() => {
+                document.querySelector('.cart-count').style.animation = 'pulse 0.5s ease';
+            }, 10);
+            showFeedback(`"${productName}" added to cart! (₹${price.toLocaleString('en-IN')}) - Total items: ${cartCount}`);
+            console.log(`Added to cart: ${productName} - ₹${price}`);
+        }
+
+        // Search handler
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value;
+            showFeedback(query ? `Searching for: "${query}"` : 'Please enter a search term');
+            console.log(`Search query: ${query}`);
+        }
+
+        // Navigation click handler
+        function handleNavClick(event, category) {
+            event.preventDefault();
+            showFeedback(`Navigating to: ${category}`);
+            console.log(`Category selected: ${category}`);
+        }
+
+        // Show feedback message
+        function showFeedback(message) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.classList.add('show');
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize
+        renderProducts();
+
+        // Allow Enter key for search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+    </script>
+</body>
+</html>
